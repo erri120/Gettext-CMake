@@ -15,6 +15,7 @@ This repo provides Gettext_helpers.cmake, which implements the following functio
         [ALL]
         [INSTALL_DESTINATION <dest>]
         [INSTALL_COMPONENT <dest>]
+        [BUILD_DESTINATION <dest>]
         [XGETTEXT_ARGS <args> ...
         [MSGMERGE_ARGS <args> ...]
         [MSGINIT_ARGS <args> ...]
@@ -76,6 +77,8 @@ Then simply call ```include(Gettext_helpers.cmake)``` and ```configure_gettext(.
     - This should be a relative path, ex. share/locale/
 * INSTALL_COMPONENT
     - Which component to install the .gmo files with
+* BUILD_DESTINATION
+   - Similar to `INSTALL_DESTINATION` it will copy the .gmo files pre-build
 * \<PROG>_ARGS
     - A list of arguments to pass to the given program
     - XGETTEXT_ARGS are most likely to be used to specify additional keywords and

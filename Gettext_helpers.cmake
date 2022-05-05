@@ -15,6 +15,7 @@ find_program(GETTEXT_MSGMERGE_COMMAND msgmerge)
 #     [ALL]
 #     [INSTALL_DESTINATION <dest>]
 #     [INSTALL_COMPONENT <dest>]
+#     [BUILD_DESTINATION <dest>]
 #     [XGETTEXT_ARGS <args> ...
 #     [MSGMERGE_ARGS <args> ...]
 #     [MSGINIT_ARGS <args> ...]
@@ -31,7 +32,9 @@ function(configure_gettext)
     set(options ALL)
     set(one_value_args 
         DOMAIN INSTALL_DESTINATION INSTALL_COMPONENT TARGET_NAME
-        POTFILE_DESTINATION POFILE_DESTINATION GMOFILE_DESTINATION)
+        POTFILE_DESTINATION POFILE_DESTINATION GMOFILE_DESTINATION
+        BUILD_DESTINATION
+    )
     set(multi_args SOURCES LANGUAGES XGETTEXT_ARGS MSGFMT_ARGS MSGINIT_ARGS MSGMERGE_ARGS)
     cmake_parse_arguments(GETTEXT
         "${options}" "${one_value_args}" "${multi_args}" ${ARGV})
@@ -157,10 +160,20 @@ function(configure_gettext)
             else()
                 set(comp_line)
             endif()
+
             install(FILES "${GETTEXT_GMOFILE_DESTINATION}/${lang}/${GETTEXT_DOMAIN}.gmo"
                 DESTINATION "${GETTEXT_INSTALL_DESTINATION}/${lang}/LC_MESSAGES/"
                 ${comp_line}
                 RENAME "${GETTEXT_DOMAIN}.mo")
+        endif()
+
+        if(GETTEXT_BUILD_DESTINATION)
+            add_custom_command(
+                TARGET "${GETTEXT_TARGET_NAME}-${lang}" PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                    "${GETTEXT_GMOFILE_DESTINATION}/${lang}/${GETTEXT_DOMAIN}.gmo"
+                    "${GETTEXT_BUILD_DESTINATION}/${lang}/LC_MESSAGES/${GETTEXT_DOMAIN}.mo"
+            )
         endif()
 
     endforeach() # lang IN LISTS GETTEXT_LANGUAGES
